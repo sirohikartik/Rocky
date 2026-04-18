@@ -7,6 +7,7 @@ class EmbeddingEngine:
         self.words = []
         self.embeddings = []
         self.videos = []
+        self.rotations = []   # ✅ NEW
 
         with open(csv_path, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
@@ -15,19 +16,25 @@ class EmbeddingEngine:
                 word = row["word"].split(".")[-1].strip()
                 self.words.append(word)
 
+                # embedding
                 emb = np.array(json.loads(row["vector_embedding"]), dtype=np.float32)
                 self.embeddings.append(emb)
 
-                # no video column yet
+                # rotations (safe fallback)
+                if "bone_rotations" in row and row["bone_rotations"]:
+                    self.rotations.append(json.loads(row["bone_rotations"]))
+                else:
+                    self.rotations.append([])
+
                 self.videos.append(None)
 
         self.embeddings = np.vstack(self.embeddings)
 
-        # normalize embeddings once (faster similarity)
+        # normalize embeddings once
         norms = np.linalg.norm(self.embeddings, axis=1, keepdims=True)
         self.embeddings = self.embeddings / norms
 
-        # fast lookup map
+        # fast lookup
         self.word_to_index = {w.lower(): i for i, w in enumerate(self.words)}
 
     def _cosine_similarity(self, vec):
@@ -45,6 +52,7 @@ class EmbeddingEngine:
             results.append({
                 "word": self.words[i],
                 "video": self.videos[i],
+                "rotations": self.rotations[i],   # ✅ NEW
                 "score": float(sims[i])
             })
 
@@ -57,7 +65,8 @@ class EmbeddingEngine:
 
         return {
             "word": self.words[idx],
-            "video": self.videos[idx]
+            "video": self.videos[idx],
+            "rotations": self.rotations[idx]   # ✅ NEW
         }
 
 
@@ -76,7 +85,7 @@ class EmbeddingModel:
 # ------------------- USAGE -------------------
 
 if __name__ == "__main__":
-    engine = EmbeddingEngine("isl_word_embeddings.csv")
+    engine = EmbeddingEngine("isl_word_embeddings_with_rotations.csv")
     model = EmbeddingModel()
 
     # direct lookup
@@ -87,9 +96,11 @@ if __name__ == "__main__":
     print(engine.find_similar(query_vec))
 
 
+# ------------------- TEST -------------------
+
 def test_engine():
     print("=== LOADING ENGINE ===")
-    engine = EmbeddingEngine("isl_word_embeddings.csv")
+    engine = EmbeddingEngine("isl_word_embeddings_with_rotations.csv")
     model = EmbeddingModel()
 
     print("\n=== DIRECT LOOKUP TESTS ===")
@@ -114,11 +125,9 @@ def test_engine():
 
     print("\n=== EDGE CASE TESTS ===")
 
-    # word not in CSV
     missing = "banana"
     print(f"lookup('{missing}') -> {engine.lookup(missing)}")
 
-    # empty / weird input
     weird = ""
     print(f"lookup('{weird}') -> {engine.lookup(weird)}")
 
