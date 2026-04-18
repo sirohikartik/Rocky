@@ -77,7 +77,7 @@ def words_to_rotations(words, engine):
 
 
 # -------- LOAD ONCE (IMPORTANT) --------
-engine = EmbeddingEngine("isl_word_embeddings_with_rotations.csv")
+engine = EmbeddingEngine("updated_file.csv")
 model = EmbeddingModel()
 
 
@@ -133,6 +133,7 @@ async def main(s: Input):
         }
 
     # 7. map to rotations
+    isl_words = [i.lower() for i in isl_words]
     rotations = words_to_rotations(isl_words, engine)
 
     return {

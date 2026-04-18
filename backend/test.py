@@ -65,7 +65,7 @@ def run_tests():
             print("Translated:", data.get("translated_sentence"))
             print("Vocab:", data.get("resolved_vocab"))
             print("ISL:", data.get("isl_words"))
-            print("Rotations count:", len(data.get("rotations", [])))
+            print("Rotations :",data.get("rotations", []))
 
         except Exception as e:
             print("❌ Error:", e)

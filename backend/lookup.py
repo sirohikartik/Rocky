@@ -1,42 +1,109 @@
 import csv
 import json
 import numpy as np
+import sys
+import ast
 
+csv.field_size_limit(sys.maxsize)
+
+def parse_rotations(raw: str):
+    if not raw:
+        return []
+
+    raw = str(raw).strip()
+
+    try:
+        # First pass
+        parsed = json.loads(raw)
+        
+        # If it's STILL a string (the double-encoded issue), parse it again
+        if isinstance(parsed, str):
+            parsed = json.loads(parsed)
+            
+        return parsed
+    except Exception:
+        # Ultimate fallback for weirdly escaped CSV quotes
+        try:
+            raw_fixed = raw.replace('""', '"')
+            parsed = json.loads(raw_fixed)
+            if isinstance(parsed, str):
+                parsed = json.loads(parsed)
+            return parsed
+        except Exception as e:
+            print(f"❌ JSON PARSE FAIL: {e}")
+            return []
+
+def parse_rotations(raw: str):
+    if not raw:
+        return []
+
+    raw = raw.strip()
+
+    try:
+        # DictReader already unescaped the CSV quotes, so we just parse it normally.
+        return json.loads(raw)
+
+    except Exception as e:
+        print(f"❌ JSON PARSE FAIL: {e}")
+        print("RAW:", repr(raw[:200]))
+        return []
+
+
+# ------------------- ENGINE -------------------
 class EmbeddingEngine:
     def __init__(self, csv_path):
         self.words = []
         self.embeddings = []
+        self.rotations = []
         self.videos = []
-        self.rotations = []   # ✅ NEW
 
         with open(csv_path, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
+
             for row in reader:
-                # clean word like "1. loud" -> "loud"
-                word = row["word"].split(".")[-1].strip()
+                # word
+                word = row["word"].strip()
                 self.words.append(word)
 
                 # embedding
-                emb = np.array(json.loads(row["vector_embedding"]), dtype=np.float32)
+                try:
+                    emb = np.array(json.loads(row["vector_embedding"]), dtype=np.float32)
+                except Exception as e:
+                    print(f"❌ Embedding parse failed for {word}")
+                    emb = np.zeros(384, dtype=np.float32)  # fallback
+
                 self.embeddings.append(emb)
 
-                # rotations (safe fallback)
-                if "bone_rotations" in row and row["bone_rotations"]:
-                    self.rotations.append(json.loads(row["bone_rotations"]))
+                # rotations
+                rotations = parse_rotations(row.get("rotations", ""))
+
+                if len(rotations) == 0:
+                     print("❌ EMPTY ROTATION FOR:", word)
                 else:
-                    self.rotations.append([])
+                     print("✅ ROTATION LOADED:", word, "frames:", len(rotations))
+
+                self.rotations.append(rotations)
 
                 self.videos.append(None)
 
+        # stack embeddings
         self.embeddings = np.vstack(self.embeddings)
 
-        # normalize embeddings once
+        # normalize
         norms = np.linalg.norm(self.embeddings, axis=1, keepdims=True)
         self.embeddings = self.embeddings / norms
 
-        # fast lookup
+        # lookup map
         self.word_to_index = {w.lower(): i for i, w in enumerate(self.words)}
 
+        # 🔍 DEBUG (prints once)
+        print("=== ENGINE LOADED ===")
+        print("Total words:", len(self.words))
+        print("Sample word:", self.words[0])
+        print("Sample rotation length:", len(self.rotations[0]))
+        print("=====================")
+
+    # ------------------- SIMILARITY -------------------
     def _cosine_similarity(self, vec):
         vec = vec / np.linalg.norm(vec)
         return self.embeddings @ vec
@@ -51,13 +118,13 @@ class EmbeddingEngine:
         for i in idxs:
             results.append({
                 "word": self.words[i],
-                "video": self.videos[i],
-                "rotations": self.rotations[i],   # ✅ NEW
+                "rotations": self.rotations[i],
                 "score": float(sims[i])
             })
 
         return results
 
+    # ------------------- LOOKUP -------------------
     def lookup(self, word: str):
         idx = self.word_to_index.get(word.lower())
         if idx is None:
@@ -65,13 +132,11 @@ class EmbeddingEngine:
 
         return {
             "word": self.words[idx],
-            "video": self.videos[idx],
-            "rotations": self.rotations[idx]   # ✅ NEW
+            "rotations": self.rotations[idx]
         }
 
 
-# ------------------- OPTIONAL: embedding model -------------------
-
+# ------------------- OPTIONAL MODEL -------------------
 from sentence_transformers import SentenceTransformer
 
 class EmbeddingModel:
@@ -80,57 +145,3 @@ class EmbeddingModel:
 
     def encode(self, text: str):
         return self.model.encode(text)
-
-
-# ------------------- USAGE -------------------
-
-if __name__ == "__main__":
-    engine = EmbeddingEngine("isl_word_embeddings_with_rotations.csv")
-    model = EmbeddingModel()
-
-    # direct lookup
-    print(engine.lookup("loud"))
-
-    # similarity search
-    query_vec = model.encode("noisy")
-    print(engine.find_similar(query_vec))
-
-
-# ------------------- TEST -------------------
-
-def test_engine():
-    print("=== LOADING ENGINE ===")
-    engine = EmbeddingEngine("isl_word_embeddings_with_rotations.csv")
-    model = EmbeddingModel()
-
-    print("\n=== DIRECT LOOKUP TESTS ===")
-
-    test_words = ["loud", "mean", "rich", "poor", "thick", "LOUD"]
-
-    for w in test_words:
-        result = engine.lookup(w)
-        print(f"lookup('{w}') -> {result}")
-
-    print("\n=== SIMILARITY TESTS ===")
-
-    query_words = ["noisy", "wealthy", "thin", "kind"]
-
-    for q in query_words:
-        print(f"\nQuery: '{q}'")
-        vec = model.encode(q)
-        results = engine.find_similar(vec, top_k=3)
-
-        for r in results:
-            print(f"  -> {r['word']} (score={r['score']:.4f})")
-
-    print("\n=== EDGE CASE TESTS ===")
-
-    missing = "banana"
-    print(f"lookup('{missing}') -> {engine.lookup(missing)}")
-
-    weird = ""
-    print(f"lookup('{weird}') -> {engine.lookup(weird)}")
-
-
-if __name__ == "__main__":
-    test_engine()
