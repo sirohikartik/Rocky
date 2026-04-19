@@ -1,11 +1,41 @@
 import { useState, useRef, useEffect } from "react";
 import "./App.css";
 
+function Avatar({ isActive }) {
+  const avatarRef = useRef(null);
+
+  useEffect(() => {
+    if (avatarRef.current) {
+      if (isActive) {
+        avatarRef.current.play();
+      } else {
+        avatarRef.current.pause();
+        avatarRef.current.currentTime = 0;
+      }
+    }
+  }, [isActive]);
+
+  return (
+    <div className="avatar-container">
+      <video 
+        ref={avatarRef}
+        className="avatar-video"
+        src="/avatar.mp4"
+        loop
+        muted
+        playsInline
+      />
+      {!isActive && <div className="avatar-placeholder">Avatar</div>}
+    </div>
+  );
+}
+
 export default function Home() {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [sendStatus, setSendStatus] = useState("");
+  const [avatarActive, setAvatarActive] = useState(false);
   const mediaRecorderRef = useRef(null);
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
@@ -51,6 +81,7 @@ export default function Home() {
       
       mediaRecorder.start(100);
       setIsRecording(true);
+      setAvatarActive(true);
       
     } catch (err) {
       console.error("Error accessing microphone:", err);
@@ -61,6 +92,7 @@ export default function Home() {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
+      setAvatarActive(false);
     }
   };
 
@@ -151,7 +183,9 @@ export default function Home() {
 
       <div className="container">
         <div className="left-panel">
-          <div className="left-box"></div>
+          <div className="left-box">
+            <Avatar isActive={avatarActive} />
+          </div>
         </div>
 
         <div className="right-panel">
