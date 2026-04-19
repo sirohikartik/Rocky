@@ -24,6 +24,24 @@ function setBoneRotation(vrm, boneName, euler) {
   boneNode.rotation.set(euler.x, euler.y, euler.z, 'XYZ');
 }
 
+const ALL_REST_BONES = [
+  'upperChest', 'neck', 'head',
+  'leftShoulder', 'leftLowerArm', 'leftHand',
+  'rightShoulder', 'rightLowerArm', 'rightHand',
+  'leftUpperLeg', 'leftLowerLeg', 'leftFoot', 'leftToes',
+  'rightUpperLeg', 'rightLowerLeg', 'rightFoot', 'rightToes',
+  'leftThumbProximal', 'leftThumbIntermediate', 'leftThumbDistal',
+  'leftIndexProximal', 'leftIndexIntermediate', 'leftIndexDistal',
+  'leftMiddleProximal', 'leftMiddleIntermediate', 'leftMiddleDistal',
+  'leftRingProximal', 'leftRingIntermediate', 'leftRingDistal',
+  'leftLittleProximal', 'leftLittleIntermediate', 'leftLittleDistal',
+  'rightThumbProximal', 'rightThumbIntermediate', 'rightThumbDistal',
+  'rightIndexProximal', 'rightIndexIntermediate', 'rightIndexDistal',
+  'rightMiddleProximal', 'rightMiddleIntermediate', 'rightMiddleDistal',
+  'rightRingProximal', 'rightRingIntermediate', 'rightRingDistal',
+  'rightLittleProximal', 'rightLittleIntermediate', 'rightLittleDistal'
+];
+
 function VRMAvatar({ vrm, animData, onSequenceEnd }) {
   const vrmRef = useRef(null);
   const animDataRef = useRef(null);
@@ -41,9 +59,7 @@ function VRMAvatar({ vrm, animData, onSequenceEnd }) {
     vrmRef.current = vrm;
 
     if (!animData || animData.length === 0) {
-      console.log('VRMAvatar: Avatar at Rest Position');
-      setBoneRotation(vrm, 'leftUpperArm', { x: 0, y: 0, z: 1.2 });
-      setBoneRotation(vrm, 'rightUpperArm', { x: 0, y: 0, z: -1.2 });
+      console.log('VRMAvatar: Avatar transitioning to Rest Position');
       playback.current.playing = false;
       return;
     }
@@ -67,6 +83,7 @@ function VRMAvatar({ vrm, animData, onSequenceEnd }) {
     if (!v) return;
     const pb = playback.current;
     const currentAnimData = animDataRef.current;
+    
     if (pb.playing && currentAnimData) {
       if (pb.keyIndex >= currentAnimData.length) {
         pb.playing = false;
@@ -93,6 +110,14 @@ function VRMAvatar({ vrm, animData, onSequenceEnd }) {
           pb.keyIndex += 1;
         }
       }
+    } else {
+      // Smoothly slerp all bones towards the standard rest position
+      ALL_REST_BONES.forEach((bn) => {
+        rigRotation(v, bn, { x: 0, y: 0, z: 0 }, 0.1);
+      });
+      // Enforce the relaxed A-pose for the upper arms
+      rigRotation(v, 'leftUpperArm', { x: 0, y: 0, z: 1.2 }, 0.1);
+      rigRotation(v, 'rightUpperArm', { x: 0, y: 0, z: -1.2 }, 0.1);
     }
     v.update(dt);
   });

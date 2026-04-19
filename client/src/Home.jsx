@@ -9,6 +9,7 @@ export default function Home() {
   const [isSending, setIsSending] = useState(false);
   const [sendStatus, setSendStatus] = useState("");
   const [sequence, setSequence] = useState(null);
+  const [triggerSend, setTriggerSend] = useState(false);
   const mediaRecorderRef = useRef(null);
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
@@ -21,6 +22,14 @@ export default function Home() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (triggerSend) {
+      sendToBackend();
+      setTriggerSend(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [triggerSend, transcript]);
 
   const startRecording = async () => {
     try {
@@ -92,6 +101,7 @@ export default function Home() {
       
       if (transcription) {
         setTranscript((prev) => prev + (prev ? " " : "") + transcription);
+        setTriggerSend(true);
       }
     } catch (err) {
       console.error("Transcription error:", err);
@@ -196,7 +206,7 @@ export default function Home() {
               style={{ marginTop: "12px", background: "var(--background)", borderColor: "var(--border)" }}
               disabled={isSending || isRecording}
             >
-              ✋ Play Count-to-5 Demo
+              Play Count-to-5 Demo
             </button>
             <button 
               className="record-btn"
@@ -204,15 +214,7 @@ export default function Home() {
               style={{ marginTop: "8px", background: "var(--background)", borderColor: "var(--border)" }}
               disabled={isSending || isRecording}
             >
-              🙏 Play Namaste
-            </button>
-            <button 
-              className="record-btn"
-              onClick={playWave}
-              style={{ marginTop: "8px", background: "var(--background)", borderColor: "var(--border)" }}
-              disabled={isSending || isRecording}
-            >
-              👋 Play Full Body Wave
+              Play Cool Gesture
             </button>
             
             {isRecording && (
