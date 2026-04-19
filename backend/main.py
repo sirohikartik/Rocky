@@ -4,6 +4,7 @@ import json
 import uuid
 import asyncio
 import logging
+import subprocess
 from datetime import datetime
 
 from fastapi import FastAPI, BackgroundTasks, Request
@@ -33,6 +34,11 @@ app = FastAPI()
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://localhost:3001",
+    "http://localhost:3002",
+    "http://localhost:3003",
+    "http://localhost:3004",
+    "http://localhost:5173",
 ]
 
 app.add_middleware(
@@ -96,11 +102,9 @@ def get_rotations_for_sequence(words, engine):
     logger.info(f"🔄 Fetching rotation frames for: {words}")
     
     for w in words:
-        # Assuming your engine has a get_rotation method 
-        # or stores them in a dictionary
-        rotation_data = engine.get_rotation(w.lower())
-        if rotation_data:
-            all_rotations.extend(rotation_data)
+        result = engine.lookup(w.lower())
+        if result and "rotations" in result and result["rotations"]:
+            all_rotations.extend(result["rotations"])
         else:
             logger.warning(f"⚠️ No rotation data found for: {w}")
             
@@ -208,5 +212,38 @@ async def main_endpoint(s: Input, background_tasks: BackgroundTasks):
     merged_video_path = await asyncio.to_thread(merge_videos, isl_words)
     if not merged_video_path: return {"error": "Video generation failed"}
 
-    background_tasks.add_task(os.remove, merged_video_path)
-    return FileResponse(merged_video_path, media_type="video/mp4", filename="isl_output.mp4")
+    temp_json_path = merged_video_path.replace(".mp4", "_rotations.json")
+    solver_script = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend_solver.cjs"))
+    
+    try:
+        # Spawn the node solver dynamically on the fused video
+        logger.info(f"--- [SPAWNING SOLVER: {solver_script}] ---")
+        await asyncio.to_thread(
+            subprocess.run,
+            ["node", solver_script, merged_video_path, temp_json_path],
+            check=True
+        )
+        
+        # Ingest the generated keyframes JSON array
+        with open(temp_json_path, "r") as f:
+            rotations = json.load(f)
+            
+    except Exception as e:
+        logger.error(f"Solver script execution failed: {e}")
+        rotations = []
+        
+    finally:
+        # Aggressively delete temporary heavy pipeline files
+        try:
+            if os.path.exists(merged_video_path):
+                os.remove(merged_video_path)
+            if os.path.exists(temp_json_path):
+                os.remove(temp_json_path)
+        except Exception:
+            pass
+
+    logger.info(f"--- [COMPLETED DYNAMIC VIDEO SOLVING {request_id}] ---")
+    return {
+        "isl_sentence": isl_words,
+        "rotations": rotations
+    }

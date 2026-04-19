@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import "./App.css";
+import AvatarRenderer from "./components/AvatarRenderer.jsx";
+import { COUNT_ANIMATION, NAMASTE_ANIMATION, WAVE_ANIMATION } from "./lib/animationData.js";
 
 export default function Home() {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [sendStatus, setSendStatus] = useState("");
+  const [sequence, setSequence] = useState(null);
   const mediaRecorderRef = useRef(null);
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
@@ -51,6 +54,7 @@ export default function Home() {
       
       mediaRecorder.start(100);
       setIsRecording(true);
+      console.log('🎙️ Speech Event: Started recording audio...');
       
     } catch (err) {
       console.error("Error accessing microphone:", err);
@@ -59,6 +63,7 @@ export default function Home() {
 
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
+      console.log('🛑 Speech Event: Recording stopped, processing audio transcript...');
       mediaRecorderRef.current.stop();
       setIsRecording(false);
     }
@@ -66,7 +71,7 @@ export default function Home() {
 
   const transcribeAudio = async (audioBlob) => {
     try {
-      const apiKey = "YOUR_DEEPGRAM_API_KEY";
+      const apiKey = "01945e333d4532e1b2a664c1da3f2b684408ba22";
       const url = "https://api.deepgram.com/v1/listen?smart_format=true&model=nova-2&language=en-US";
       
       const response = await fetch(url, {
@@ -101,14 +106,16 @@ export default function Home() {
 
     setIsSending(true);
     setSendStatus("");
+    setSequence(null);
+    console.log('📡 API Flow: Requesting 3D rotation data for transcript --->', transcript);
 
     try {
-      const response = await fetch("http://localhost:8000/rotation", {
+      const response = await fetch("http://localhost:8000/main", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ text: transcript }),
+        body: JSON.stringify({ sentence: transcript, lang: "en" }),
       });
 
       if (!response.ok) {
@@ -117,7 +124,12 @@ export default function Home() {
 
       const data = await response.json();
       setSendStatus("Sent");
-      console.log("Backend response:", data);
+      console.log('✅ API Flow: Received VRM gesture instructions from backend!');
+      if (data.rotations && data.rotations.length > 0) {
+        setSequence(data.rotations);
+      } else {
+        console.warn('⚠️ API Flow: No rotations found in backend response');
+      }
     } catch (err) {
       console.error("Error sending to backend:", err);
       setSendStatus("Failed");
@@ -143,6 +155,21 @@ export default function Home() {
     setSendStatus("");
   };
 
+  const playDemoCounter = () => {
+    console.log("🎬 UI Event: Manually triggering the count-to-5 animation flow...");
+    setSequence(COUNT_ANIMATION);
+  };
+
+  const playNamaste = () => {
+    console.log("🎬 UI Event: Manually triggering the namaste animation flow...");
+    setSequence(NAMASTE_ANIMATION);
+  };
+
+  const playWave = () => {
+    console.log("🎬 UI Event: Manually triggering the wave animation flow...");
+    setSequence(WAVE_ANIMATION);
+  };
+
   return (
     <>
       <nav className="navbar">
@@ -151,7 +178,7 @@ export default function Home() {
 
       <div className="container">
         <div className="left-panel">
-          <div className="left-box"></div>
+          <AvatarRenderer dynamicAnimData={sequence} onSequenceEnd={() => setSequence(null)} />
         </div>
 
         <div className="right-panel">
@@ -162,6 +189,30 @@ export default function Home() {
               disabled={isSending}
             >
               {isRecording ? "Tap to end" : "Tap to speak"}
+            </button>
+            <button 
+              className="record-btn"
+              onClick={playDemoCounter}
+              style={{ marginTop: "12px", background: "var(--background)", borderColor: "var(--border)" }}
+              disabled={isSending || isRecording}
+            >
+              ✋ Play Count-to-5 Demo
+            </button>
+            <button 
+              className="record-btn"
+              onClick={playNamaste}
+              style={{ marginTop: "8px", background: "var(--background)", borderColor: "var(--border)" }}
+              disabled={isSending || isRecording}
+            >
+              🙏 Play Namaste
+            </button>
+            <button 
+              className="record-btn"
+              onClick={playWave}
+              style={{ marginTop: "8px", background: "var(--background)", borderColor: "var(--border)" }}
+              disabled={isSending || isRecording}
+            >
+              👋 Play Full Body Wave
             </button>
             
             {isRecording && (

@@ -54,11 +54,53 @@ body {
   flex: 1.2;
 }
 
-.left-box {
+.avatar-container {
   height: 100%;
   background: var(--surface);
   border-radius: var(--radius);
   border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  min-height: 400px;
+}
+
+.avatar-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(4px);
+  gap: 12px;
+}
+
+.avatar-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(30, 41, 59, 0.3);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.avatar-error {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--record-color);
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .right-panel {
