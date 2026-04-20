@@ -10,7 +10,7 @@ const rot = (x = 0, y = 0, z = 0) => ({ x: x * DEG, y: y * DEG, z: z * DEG });
 const fRot = (ang, sd) => {
   const val = sd === 'right' ? -ang : ang;
   // If fingers spread sideways instead of curling inward, change to: rot(val, 0, 0)
-  return rot(0, 0, val); 
+  return rot(0, 0, val);
 };
 
 // Helper to generate full hand poses
@@ -80,16 +80,16 @@ export const COUNT_ANIMATION = [
   {
     duration: 0.6,
     bones: {
-      spine:            rot(0, 0, 0),
-      chest:            rot(0, 0, 0),
-      neck:             rot(0, 0, 0),
-      head:             rot(0, 0, 0),
-      rightUpperArm:    rot(0, 0, -70),      
-      rightLowerArm:    rot(0, 0, 0),
-      rightHand:        rot(0, 0, 0),
-      leftUpperArm:     rot(0, 0, 70),     
-      leftLowerArm:     rot(0, 0, 0),
-      leftHand:         rot(0, 0, 0),
+      spine: rot(0, 0, 0),
+      chest: rot(0, 0, 0),
+      neck: rot(0, 0, 0),
+      head: rot(0, 0, 0),
+      rightUpperArm: rot(0, 0, -70),
+      rightLowerArm: rot(0, 0, 0),
+      rightHand: rot(0, 0, 0),
+      leftUpperArm: rot(0, 0, 70),
+      leftLowerArm: rot(0, 0, 0),
+      leftHand: rot(0, 0, 0),
       ...getHnd('right', 'rel'),
       ...getHnd('left', 'rel')
     },
@@ -99,9 +99,9 @@ export const COUNT_ANIMATION = [
   {
     duration: 0.5,
     bones: {
-      rightUpperArm:    rot(0, 45, 50),     // Arm forward and slightly up
-      rightLowerArm:    rot(0, 100, 0),     // Bent so hand is in front of chest
-      rightHand:        rot(0, -90, 30),
+      rightUpperArm: rot(0, 45, 50),     // Arm forward and slightly up
+      rightLowerArm: rot(0, 100, 0),     // Bent so hand is in front of chest
+      rightHand: rot(0, -90, 30),
       ...getHnd('right', 'fist'),           // Form tight fist
     },
   },
@@ -110,9 +110,9 @@ export const COUNT_ANIMATION = [
   {
     duration: 0.6,
     bones: {
-      rightUpperArm:    rot(0, 45, 50),     
-      rightLowerArm:    rot(0, 100, 0),     
-      rightHand:        rot(0, -90, 30), 
+      rightUpperArm: rot(0, 45, 50),
+      rightLowerArm: rot(0, 100, 0),
+      rightHand: rot(0, -90, 30),
       ...getHnd('right', 'one'),            // Index finger straightens
     },
   },
@@ -121,9 +121,9 @@ export const COUNT_ANIMATION = [
   {
     duration: 0.6,
     bones: {
-      rightUpperArm:    rot(0, 45, 50),     
-      rightLowerArm:    rot(0, 100, 0),     
-      rightHand:        rot(0, -90, 30), 
+      rightUpperArm: rot(0, 45, 50),
+      rightLowerArm: rot(0, 100, 0),
+      rightHand: rot(0, -90, 30),
       ...getHnd('right', 'two'),            // Middle finger straightens
     },
   },
@@ -132,9 +132,9 @@ export const COUNT_ANIMATION = [
   {
     duration: 0.6,
     bones: {
-      rightUpperArm:    rot(0, 45, 50),     
-      rightLowerArm:    rot(0, 100, 0),     
-      rightHand:        rot(0, -90, 30), 
+      rightUpperArm: rot(0, 45, 50),
+      rightLowerArm: rot(0, 100, 0),
+      rightHand: rot(0, -90, 30),
       ...getHnd('right', 'three'),          // Ring finger straightens
     },
   },
@@ -143,9 +143,9 @@ export const COUNT_ANIMATION = [
   {
     duration: 0.6,
     bones: {
-      rightUpperArm:    rot(0, 45, 50),     
-      rightLowerArm:    rot(0, 100, 0),     
-      rightHand:        rot(0, -90, 30), 
+      rightUpperArm: rot(0, 45, 50),
+      rightLowerArm: rot(0, 100, 0),
+      rightHand: rot(0, -90, 30),
       ...getHnd('right', 'four'),           // Pinky straightens
     },
   },
@@ -154,9 +154,9 @@ export const COUNT_ANIMATION = [
   {
     duration: 0.8,
     bones: {
-      rightUpperArm:    rot(0, 45, 50),     
-      rightLowerArm:    rot(0, 100, 0),     
-      rightHand:        rot(0, -90, 30), 
+      rightUpperArm: rot(0, 45, 50),
+      rightLowerArm: rot(0, 100, 0),
+      rightHand: rot(0, -90, 30),
       ...getHnd('right', 'five'),           // Thumb opens
     },
   },
@@ -165,16 +165,16 @@ export const COUNT_ANIMATION = [
   {
     duration: 0.8,
     bones: {
-      spine:            rot(0, 0, 0),
-      chest:            rot(0, 0, 0),
-      neck:             rot(0, 0, 0),
-      head:             rot(0, 0, 0),
-      rightUpperArm:    rot(0, 0, -70),      
-      rightLowerArm:    rot(0, 0, 0),
-      rightHand:        rot(0, 0, 0),
-      leftUpperArm:     rot(0, 0, 70),     
-      leftLowerArm:     rot(0, 0, 0),
-      leftHand:         rot(0, 0, 0),
+      spine: rot(0, 0, 0),
+      chest: rot(0, 0, 0),
+      neck: rot(0, 0, 0),
+      head: rot(0, 0, 0),
+      rightUpperArm: rot(0, 0, -70),
+      rightLowerArm: rot(0, 0, 0),
+      rightHand: rot(0, 0, 0),
+      leftUpperArm: rot(0, 0, 70),
+      leftLowerArm: rot(0, 0, 0),
+      leftHand: rot(0, 0, 0),
       ...getHnd('right', 'rel'),
       ...getHnd('left', 'rel')
     },
@@ -187,16 +187,16 @@ export const NAMASTE_ANIMATION = [
   {
     duration: 0.6,
     bones: {
-      spine:            rot(0, 0, 0),
-      chest:            rot(0, 0, 0),
-      neck:             rot(0, 0, 0),
-      head:             rot(0, 0, 0),
-      rightUpperArm:    rot(0, 0, -70),      
-      rightLowerArm:    rot(0, 0, 0),
-      rightHand:        rot(0, 0, 0),
-      leftUpperArm:     rot(0, 0, 70),     
-      leftLowerArm:     rot(0, 0, 0),
-      leftHand:         rot(0, 0, 0),
+      spine: rot(0, 0, 0),
+      chest: rot(0, 0, 0),
+      neck: rot(0, 0, 0),
+      head: rot(0, 0, 0),
+      rightUpperArm: rot(0, 0, -70),
+      rightLowerArm: rot(0, 0, 0),
+      rightHand: rot(0, 0, 0),
+      leftUpperArm: rot(0, 0, 70),
+      leftLowerArm: rot(0, 0, 0),
+      leftHand: rot(0, 0, 0),
       ...getHnd('right', 'rel'),
       ...getHnd('left', 'rel')
     },
@@ -204,15 +204,15 @@ export const NAMASTE_ANIMATION = [
   {
     duration: 1.0,
     bones: {
-      spine:            rot(0, 0, 0),
-      chest:            rot(10, 0, 0),     // Lean forward slightly
-      head:             rot(15, 0, 0),     // Bow head forward slightly
-      rightUpperArm:    rot(-40, -20, 20), // Swing arm forward and in 
-      rightLowerArm:    rot(-90, 0, 0),    // Bend elbow upward across chest
-      rightHand:        rot(0, 0, 0),      // Keep wrist flat
-      leftUpperArm:     rot(-40, 20, -20), // Swing left arm forward and in
-      leftLowerArm:     rot(-90, 0, 0),    // Bend left elbow upward
-      leftHand:         rot(0, 0, 0),      // Keep wrist flat
+      spine: rot(0, 0, 0),
+      chest: rot(10, 0, 0),     // Lean forward slightly
+      head: rot(15, 0, 0),     // Bow head forward slightly
+      rightUpperArm: rot(-40, -20, 20), // Swing arm forward and in 
+      rightLowerArm: rot(-90, 0, 0),    // Bend elbow upward across chest
+      rightHand: rot(0, 0, 0),      // Keep wrist flat
+      leftUpperArm: rot(-40, 20, -20), // Swing left arm forward and in
+      leftLowerArm: rot(-90, 0, 0),    // Bend left elbow upward
+      leftHand: rot(0, 0, 0),      // Keep wrist flat
       ...getHnd('right', 'five'),          // Straight open hand
       ...getHnd('left', 'five'),           // Straight open hand
     },
@@ -220,15 +220,15 @@ export const NAMASTE_ANIMATION = [
   {
     duration: 1.5, // Hold pose
     bones: {
-      spine:            rot(0, 0, 0),
-      chest:            rot(10, 0, 0),
-      head:             rot(15, 0, 0),
-      rightUpperArm:    rot(-40, -20, 20),
-      rightLowerArm:    rot(-90, 0, 0),
-      rightHand:        rot(0, 0, 0),
-      leftUpperArm:     rot(-40, 20, -20),
-      leftLowerArm:     rot(-90, 0, 0),
-      leftHand:         rot(0, 0, 0),
+      spine: rot(0, 0, 0),
+      chest: rot(10, 0, 0),
+      head: rot(15, 0, 0),
+      rightUpperArm: rot(-40, -20, 20),
+      rightLowerArm: rot(-90, 0, 0),
+      rightHand: rot(0, 0, 0),
+      leftUpperArm: rot(-40, 20, -20),
+      leftLowerArm: rot(-90, 0, 0),
+      leftHand: rot(0, 0, 0),
       ...getHnd('right', 'five'),
       ...getHnd('left', 'five'),
     },
@@ -236,15 +236,15 @@ export const NAMASTE_ANIMATION = [
   {
     duration: 0.8, // Final Rest
     bones: {
-      spine:            rot(0, 0, 0),
-      chest:            rot(0, 0, 0),
-      head:             rot(0, 0, 0),
-      rightUpperArm:    rot(0, 0, -70),
-      rightLowerArm:    rot(0, 0, 0),
-      rightHand:        rot(0, 0, 0),
-      leftUpperArm:     rot(0, 0, 70),
-      leftLowerArm:     rot(0, 0, 0),
-      leftHand:         rot(0, 0, 0),
+      spine: rot(0, 0, 0),
+      chest: rot(0, 0, 0),
+      head: rot(0, 0, 0),
+      rightUpperArm: rot(0, 0, -70),
+      rightLowerArm: rot(0, 0, 0),
+      rightHand: rot(0, 0, 0),
+      leftUpperArm: rot(0, 0, 70),
+      leftLowerArm: rot(0, 0, 0),
+      leftHand: rot(0, 0, 0),
       ...getHnd('right', 'rel'),
       ...getHnd('left', 'rel')
     },
@@ -256,16 +256,16 @@ export const WAVE_ANIMATION = [
   {
     duration: 0.6,
     bones: {
-      spine:            rot(0, 0, 0),
-      chest:            rot(0, 0, 0),
-      neck:             rot(0, 0, 0),
-      head:             rot(0, 0, 0),
-      rightUpperArm:    rot(0, 0, -70),      
-      rightLowerArm:    rot(0, 0, 0),
-      rightHand:        rot(0, 0, 0),
-      leftUpperArm:     rot(0, 0, 70),     
-      leftLowerArm:     rot(0, 0, 0),
-      leftHand:         rot(0, 0, 0),
+      spine: rot(0, 0, 0),
+      chest: rot(0, 0, 0),
+      neck: rot(0, 0, 0),
+      head: rot(0, 0, 0),
+      rightUpperArm: rot(0, 0, -70),
+      rightLowerArm: rot(0, 0, 0),
+      rightHand: rot(0, 0, 0),
+      leftUpperArm: rot(0, 0, 70),
+      leftLowerArm: rot(0, 0, 0),
+      leftHand: rot(0, 0, 0),
       ...getHnd('right', 'rel'),
       ...getHnd('left', 'rel')
     },
@@ -273,54 +273,54 @@ export const WAVE_ANIMATION = [
   {
     duration: 0.5,
     bones: { // Raise arm
-      rightUpperArm:    rot(-10, 0, 160),  // Hand straight up alongside ear
-      rightLowerArm:    rot(0, 0, 0),
-      rightHand:        rot(0, 0, 0),
+      rightUpperArm: rot(-10, 0, 160),  // Hand straight up alongside ear
+      rightLowerArm: rot(0, 0, 0),
+      rightHand: rot(0, 0, 0),
       ...getHnd('right', 'five'),
     },
   },
   { // Wave left
     duration: 0.3,
     bones: {
-      rightUpperArm:    rot(-10, 0, 160),
-      rightLowerArm:    rot(0, 0, 0),
-      rightHand:        rot(0, 0, -30),    // Oscillate wrist on Z axis
+      rightUpperArm: rot(-10, 0, 160),
+      rightLowerArm: rot(0, 0, 0),
+      rightHand: rot(0, 0, -30),    // Oscillate wrist on Z axis
       ...getHnd('right', 'five'),
     },
   },
   { // Wave right
     duration: 0.3,
     bones: {
-      rightUpperArm:    rot(-10, 0, 160),
-      rightLowerArm:    rot(0, 0, 0),
-      rightHand:        rot(0, 0, 30),     // Oscillate wrist on Z axis
+      rightUpperArm: rot(-10, 0, 160),
+      rightLowerArm: rot(0, 0, 0),
+      rightHand: rot(0, 0, 30),     // Oscillate wrist on Z axis
       ...getHnd('right', 'five'),
     },
   },
   { // Wave left
     duration: 0.3,
     bones: {
-      rightUpperArm:    rot(-10, 0, 160),
-      rightLowerArm:    rot(0, 0, 0),
-      rightHand:        rot(0, 0, -30),
+      rightUpperArm: rot(-10, 0, 160),
+      rightLowerArm: rot(0, 0, 0),
+      rightHand: rot(0, 0, -30),
       ...getHnd('right', 'five'),
     },
   },
   { // Wave right
     duration: 0.3,
     bones: {
-      rightUpperArm:    rot(-10, 0, 160),
-      rightLowerArm:    rot(0, 0, 0),
-      rightHand:        rot(0, 0, 30),
+      rightUpperArm: rot(-10, 0, 160),
+      rightLowerArm: rot(0, 0, 0),
+      rightHand: rot(0, 0, 30),
       ...getHnd('right', 'five'),
     },
   },
   { // Drop
     duration: 0.6,
     bones: {
-      rightUpperArm:    rot(0, 0, -70),
-      rightLowerArm:    rot(0, 0, 0),
-      rightHand:        rot(0, 0, 0),
+      rightUpperArm: rot(0, 0, -70),
+      rightLowerArm: rot(0, 0, 0),
+      rightHand: rot(0, 0, 0),
       ...getHnd('right', 'rel'),
     },
   }
