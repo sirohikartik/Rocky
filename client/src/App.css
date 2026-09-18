@@ -54,7 +54,7 @@ body {
   flex: 1.2;
 }
 
-.left-box {
+.avatar-container {
   height: 100%;
   background: var(--surface);
   border-radius: var(--radius);
