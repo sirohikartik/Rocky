@@ -1,4 +1,4 @@
-# ISL Generation System
+# Rocky
 
 An end-to-end system that translates natural language (English and Hindi) into **Indian Sign Language (ISL)**. The system provides two types of output: a stitched sequence of sign videos and raw 3D rotation data for rendering a virtual avatar.
 
